@@ -1,24 +1,69 @@
-from bettingGame import BettingGame
 import os
+from bettingGame import BettingGame
 
+def clear_screen():
+    os.system('cls' if os.name == 'nt' else 'clear')
+
+def print_center(message):
+    terminal_width = os.get_terminal_size().columns
+    print(message.center(terminal_width))
+
+def display_menu():
+    clear_screen()
+    print_center("Bem-vindo ao Jogo de Apostas!")
+    print("\n1. Registrar jogador")
+    print("2. Remover jogador")
+    print("3. Fazer uma aposta")
+    print("4. Ver saldo")
+    print("5. Iniciar o jogo")
+    print("6. Sair")
 
 def main():
     game = BettingGame()
-    
     while True:
-        os.system("cls")
-        print(50*"▓","Cassino Offline",50*"▓")
-        print("\n|"+"1.Jogar".center(115)+"|","\n|"+"2.Novo jogador".center(115)+"|","\n|"+"3.Remover jogador".center(115)+"|","\n|"+"4.Sair do jogo".center(115)+"|")
-        print("\n|"+"Selecione um número e pressione enter...".center(115)+"|")
+        display_menu()
+        choice = input("\nEscolha uma opção: ")
         
-        choice = int(input(""))
+        if choice == '1':
+            name = input("Digite o nome do jogador: ")
+            balance = float(input("Digite o saldo inicial do jogador: "))
+            game.add_player(name, balance)
+            input("\nPressione Enter para continuar...")
         
-        if choice == 1:
-            game.start_game()
-        elif choice == 2:
-            pass
-        elif choice == 3:
-            pass
-        elif choice == 4:
+        elif choice == '2':
+            name = input("Digite o nome do jogador que deseja remover: ")
+            game.remove_player(name)
+            input("\nPressione Enter para continuar...")
+
+        elif choice == '3':
+            name = input("Digite o nome do jogador que deseja fazer a aposta: ")
+            amount = float(input("Digite o valor da aposta: "))
+            num = int(input("Digite o número em que deseja apostar (entre 1 e 5): "))
+            game.place_bet(name, amount, num)
+            input("\nPressione Enter para continuar...")
+        
+        elif choice == '4':
+            clear_screen()
+            print_center("Saldo dos jogadores:")
+            for player, balance in game.players.items():
+                print(f"{player}: ${balance:,.2f}")
+            input("\nPressione Enter para continuar...")
+        
+        elif choice == '5':
+            if len(game.player_bets) < 2:
+                input("\nÉ necessário ter no mínimo duas apostas feitas por jogadores diferentes para iniciar o jogo! Pressione Enter para continuar...")
+            else:
+                clear_screen()
+                print_center("Iniciando o jogo...")
+                game.start_game()
+                input("\nPressione Enter para continuar...")
+        
+        elif choice == '6':
+            print("Obrigado por jogar!")
             break
-main()
+        
+        else:
+            input("\nOpção inválida! Pressione Enter para continuar...")
+
+if __name__ == "__main__":
+    main()
