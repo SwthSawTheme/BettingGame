@@ -8,12 +8,13 @@ class BettingGame:
         self.players = {}
         self.pot = 0.0
         self.current_bet = 0.0
-        self.winning_number = None
+        self.winning_number = random.randint(1,5)
         self.player_bets = {}
+        self.num_bet = {}
         
     def add_player(self,name, opening_balance):
         if name not in self.players:
-            self.players[name] = opening_balance
+            self.players[name] = float(opening_balance)
         else:
             print("Jogador já registrado!")
     
@@ -23,32 +24,50 @@ class BettingGame:
         else:
             del self.players[name]
     
-    def place_bet(self,player,amount):
-        if player in self.players and amount >= self.players[player]:
+    def place_bet(self,player,amount,num):
+        if player in self.players and self.players[player] >= amount:
             self.players[player] -= amount
             self.player_bets[player] = amount
+            self.num_bet[player] = num
             self.current_bet += amount
-            print(f"{player} apostou ${amount:.2f}")
+            self.pot += amount
+            print(f"{player} apostou ${amount:.2f} dolares no número {num}")
         else:
-            print("Saldo insuficiente, ou jogador não registrado!")
-    
-    def num_aposta(self):
-        self.winning_number = random.randint(1.5)
-        for player in self.players:
-            num = int(input("Escolha um número: "))
+            print(f"{player} está com saldo insuficiente!")
             
-        
-    
-    def start_game(self):
-        if len(self.player_bets) >= 2:
-            for player, value in self.player_bets:
-                self.pot += value
-
-        else:
-            print("Necessário 2 jogadores no minimo para iniciar!")
-    
     def match_winner(self):
-        pass
+        num = self.winning_number
+        return num
     
     def reset_game(self):
-        pass
+        self.players = {}
+        self.pot = 0.0
+        self.player_bets = {}
+        self.num_bet = {}
+            
+    def start_game(self):
+        result = self.winning_number
+        winners = []
+        
+        for player,num in self.num_bet.items():
+            if num == result:
+                winners.append(player)
+        
+        if winners:
+            pot = self.pot / len(winners)
+            for winner in winners:
+                self.players[winner] += pot
+                print(f"{winner} venceu a rodada e ganhou ${pot:.2f}")
+        else:
+            print("Não teve ganhadores!")
+            self.reset_game()
+    
+if __name__ == "__main__":
+    cassino = BettingGame()
+    
+    cassino.add_player("Saw",20000)
+    cassino.place_bet("Saw", 4000,3)
+    cassino.add_player("Clary",30000)
+    cassino.place_bet("Clary",5000,4)
+    
+    cassino.start_game()
